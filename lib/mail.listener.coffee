@@ -26,7 +26,12 @@ class MailListener extends EventEmitter
       else
         util.log "successfully connected to mail server"
         @emit "server:connected"
-        # 2. open INBOX
+        # set some error event listeners
+        @imap.on 'close', (err) =>
+          @emit 'server:close', err
+        @imap.on 'error', (err) =>
+          @emit 'server:error', err
+        # 2. open mailbox
         util.log "open mailbox #{@mailbox}"
         @imap.openBox @mailbox, false, (err) =>
           if err
@@ -49,24 +54,28 @@ class MailListener extends EventEmitter
                   util.log "error searching unseen emails #{err}"
                   @emit "error", err
                 else
-                  util.log "found #{searchResults.length} emails"
-                  # 5. fetch emails
-                  fetch = @imap.fetch searchResults,
-                    markSeen: true
-                    request:
-                      headers: false #['from', 'to', 'subject', 'date']
-                      body: "full"
-                  # 6. email was fetched. Parse it!   
-                  fetch.on "message", (msg) =>
-                    parser = new MailParser
-                    msg.on "data", (data) -> parser.write data.toString()
-                    parser.on "end", (mail) =>
-                      # util.log "parsed mail" + util.inspect mail, false, 5
-                      @emit "mail:parsed", mail
-                    msg.on "end", ->
-                      util.log "message id: #{msg.uid}"
-                      # util.log "fetched message: " + util.inspect(msg, false, 5)
-                      parser.end()
+                  try
+                    util.log "found #{searchResults.length} emails"
+                    # 5. fetch emails
+                    fetch = @imap.fetch searchResults,
+                      markSeen: true
+                      request:
+                        headers: false #['from', 'to', 'subject', 'date']
+                        body: "full"
+                    # 6. email was fetched. Parse it!   
+                    fetch.on "message", (msg) =>
+                      parser = new MailParser
+                      msg.on "data", (data) -> parser.write data.toString()
+                      parser.on "end", (mail) =>
+                        util.log "parsed mail" + util.inspect mail, false, 5
+                        @emit "mail:parsed", mail
+                      msg.on "end", ->
+                        util.log "message id: #{msg.uid}"
+                        # util.log "fetched message: " + util.inspect(msg, false, 5)
+                        parser.end()
+                  catch error
+                    util.log "Error fetching Emails from Account: #{error}"
+                    
   # stop listener
   stop: =>
     @imap.logout =>
