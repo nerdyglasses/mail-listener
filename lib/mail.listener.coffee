@@ -8,6 +8,7 @@ class MailListener extends EventEmitter
 
   constructor: (options) ->
     # TODO add validation for required parameters
+    @mailbox = options.mailbox
     @imap = new ImapConnection
       username: options.username
       password: options.password
@@ -26,13 +27,19 @@ class MailListener extends EventEmitter
         util.log "successfully connected to mail server"
         @emit "server:connected"
         # 2. open INBOX
-        @imap.openBox "INBOX", false, (err) =>
+        util.log "open mailbox #{@mailbox}"
+        @imap.openBox @mailbox, false, (err) =>
           if err
             util.log "error opening mail box #{err}"
             @emit "error", err
           else
-            util.log "successfully opened mail box"            
-            # 3. listen for new emails in the inbox
+            @emit "mailbox:connected"
+            util.log "successfully opened mail box"
+            # 3a. listen for mail changes
+            @imap.on 'msgupdate', (msg) =>
+              console.log "changed msg: ", util.inspect(msg)
+              @emit 'mail:msgupdate', msg
+            # 3b. listen for new emails in the inbox
             @imap.on "mail", (id) =>
               util.log "new mail arrived with id #{id}"
               @emit "mail:arrived", id
@@ -41,7 +48,7 @@ class MailListener extends EventEmitter
                 if err
                   util.log "error searching unseen emails #{err}"
                   @emit "error", err
-                else              
+                else
                   util.log "found #{searchResults.length} emails"
                   # 5. fetch emails
                   fetch = @imap.fetch searchResults,
@@ -54,10 +61,11 @@ class MailListener extends EventEmitter
                     parser = new MailParser
                     msg.on "data", (data) -> parser.write data.toString()
                     parser.on "end", (mail) =>
-                      util.log "parsed mail" + util.inspect mail, false, 5
+                      # util.log "parsed mail" + util.inspect mail, false, 5
                       @emit "mail:parsed", mail
                     msg.on "end", ->
-                      util.log "fetched message: " + util.inspect(msg, false, 5)
+                      util.log "message id: #{msg.uid}"
+                      # util.log "fetched message: " + util.inspect(msg, false, 5)
                       parser.end()
   # stop listener
   stop: =>
