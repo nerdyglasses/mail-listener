@@ -28,8 +28,10 @@ class MailListener extends EventEmitter
         @emit "server:connected"
         # set some error event listeners
         @imap.on 'close', (err) =>
+          console.log 'close', util.inspect(err)
           @emit 'server:close', err
         @imap.on 'error', (err) =>
+          console.log 'error', util.inspect(err)
           @emit 'server:error', err
         # 2. open mailbox
         util.log "open mailbox #{@mailbox}"
@@ -42,7 +44,7 @@ class MailListener extends EventEmitter
             util.log "successfully opened mail box"
             # 3a. listen for mail changes
             @imap.on 'msgupdate', (msg) =>
-              console.log "changed msg: ", util.inspect(msg)
+              util.log "changed msg: ", util.inspect(msg)
               @emit 'mail:msgupdate', msg
             # 3b. listen for new emails in the inbox
             @imap.on "mail", (id) =>
