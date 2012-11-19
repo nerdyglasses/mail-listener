@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "coffee-script": ">=1.3.3",
-    "imap": "https://github.com/mscdex/node-imap.git",
+    "imap": "https://github.com/mscdex/node-imap/tarball/master",
     "mailparser": ">=0.2.27"
   },
   "devDependencies": {},
