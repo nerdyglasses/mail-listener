@@ -50,7 +50,9 @@ class MailListener extends EventEmitter
               @search()
   search: =>
     console.log "Searchching #{@account.email} since: #{@settings.startDate}"
-    @imap.search [ 'ALL', ['SINCE', @settings.startDate] ], (err, searchResults) =>
+    date = @settings.startDate
+    date.setDate(date.getDate() - 1)
+    @imap.search [ 'ALL', ['SINCE', date] ], (err, searchResults) =>
       if err
         util.log "error searching emails #{err}"
         @emit "error", err
