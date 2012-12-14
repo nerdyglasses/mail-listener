@@ -75,7 +75,7 @@ class MailListener extends EventEmitter
             # parser.on "end", (mail) =>
             #   # util.log "parsed mail" + util.inspect mail, false, 5
             #   @emit "mail:parsed", mail, raw
-            msg.on "end", ->
+            msg.on "end", =>
               # util.log "message id: #{msg.uid}"
               # util.log "fetched message: " + util.inspect(msg, false, 5)
               @emit "mail:parsed", raw
