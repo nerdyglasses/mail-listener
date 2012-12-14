@@ -1,8 +1,19 @@
 {
-  "author": "CircuitHub <developers@circuithub.com> (circuithub.com)",
+  "author": {
+    "name": "CircuitHub",
+    "email": "developers@circuithub.com",
+    "url": "circuithub.com"
+  },
   "name": "mail-listener",
   "description": "Mail listener library for node.js. Get notification when new email arrived.",
-  "keywords": ["mail", "job", "imap", "mail listener", "email", "email parser"],
+  "keywords": [
+    "mail",
+    "job",
+    "imap",
+    "mail listener",
+    "email",
+    "email parser"
+  ],
   "version": "0.2.0",
   "repository": {
     "type": "git",
@@ -14,8 +25,15 @@
   "dependencies": {
     "coffee-script": ">=1.3.3",
     "imap": "https://github.com/mscdex/node-imap/tarball/master",
-    "mailparser": ">=0.2.27"
+    "moment-strftime": "~>0.1.2"
   },
   "devDependencies": {},
-  "optionalDependencies": {}
+  "optionalDependencies": {},
+  "readme": "# Overview\n\nMail listener library for node.js. Get notification when new email arrived to inbox. Uses IMAP protocol.\n\nWe are using these libraries: [node-imap](https://github.com/mscdex/node-imap), [mailparser](https://github.com/andris9/mailparser).\n\nHeavily inspired by [this gist](https://gist.github.com/1226809).\n\n## Use\n\nInstall\n\n`npm install mail-listener`\n\n\nCode\n\n``` coffee\n\nMailListener = require \"mail-listener\"\n\nmailListener = new MailListener\n  username: \"imap-username\"\n  password: \"imap-password\"\n  host: \"imap-host\"\n  port: 993 # imap port\n  secure: true # use secure connection\n\n\n # start listener. You can stop it calling `stop method`\nmailListener.start()\n\n# subscribe to server connected event\nmailListener.on \"server:connected\", ->\n  console.log \"imap connected\"\n\n# subscribe to error events\nmailListener.on \"error\", (err) ->\n  console.log \"error happened\", err\n\n# mail arrived and was parsed by parser \nmailListener.on \"mail:parsed\", (mail) ->\n  # do something with mail object including attachments\n  console.log \"parsed email with attachment\", mail.attachments.length\n  ...\n```\n\nThat's easy!\n\n\n## Contributions\n\nMail-listener is ready to use in your project. However if you need any feature tell us or fork project and implement it by yourself.\n\nWe appreciate feedback!\n\n## License\n\n(The MIT License)\n\nCopyright (c) 2011 CircuitHub., https://circuithub.com/\n\nPermission is hereby granted, free of charge, to any person obtaining\na copy of this software and associated documentation files (the\n'Software'), to deal in the Software without restriction, including\nwithout limitation the rights to use, copy, modify, merge, publish,\ndistribute, sublicense, and/or sell copies of the Software, and to\npermit persons to whom the Software is furnished to do so, subject to\nthe following conditions:\n\nThe above copyright notice and this permission notice shall be\nincluded in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,\nEXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF\nMERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.\nIN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY\nCLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,\nTORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE\nSOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.",
+  "readmeFilename": "README.md",
+  "_id": "mail-listener@0.2.0",
+  "dist": {
+    "shasum": "8ffbb7b7ac1d4b707d04d6dca73726fcee59a418"
+  },
+  "_from": "mail-listener@https://github.com/nerdyglasses/mail-listener/tarball/master"
 }
