@@ -103,6 +103,8 @@ class MailListener extends EventEmitter
           #   util.log 'Done fetching all messages!'
         catch error
           util.log "Error fetching Emails from Account: #{error}"
+          util.log "Error Stack:"
+          util.log error.stack
                     
   # stop listener
   stop: =>
