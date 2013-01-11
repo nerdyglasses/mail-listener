@@ -68,10 +68,13 @@ class MailListener extends EventEmitter
               body: "full"
           # 6. email was fetched. Parse it!   
           fetch.on "message", (msg) =>
+            util.log "on message"
             raw = ""
             msg.on "data", (data) ->
+              util.log "message on data"
               raw += data.toString()
             msg.on "end", =>
+              util.log "message on end"
               # util.log "message id: #{msg.uid}"
               # util.log "fetched message: " + util.inspect(msg, false, 5)
               @emit "mail:parsed", raw
