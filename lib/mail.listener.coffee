@@ -58,28 +58,23 @@ class MailListener extends EventEmitter
         @emit "error", err
       else
         try
+          util.log "where is the problem? #{err}, #{searchResults}"
           util.log "found #{searchResults.length} emails"
           # 5. fetch emails
-          fetch = @imap.fetch searchResults,
-            markSeen: true
-            request:
-              headers: false #['from', 'to', 'subject', 'date']
-              body: "full"
+          # fetch = @imap.fetch searchResults,
+          #   markSeen: true
+          #   request:
+          #     headers: false #['from', 'to', 'subject', 'date']
+          #     body: "full"
           # 6. email was fetched. Parse it!   
-          fetch.on "message", (msg) =>
-            raw = ""
-            # parser = new MailParser
-            msg.on "data", (data) ->
-              raw += data.toString()
-              # parser.write data.toString()
-            # parser.on "end", (mail) =>
-            #   # util.log "parsed mail" + util.inspect mail, false, 5
-            #   @emit "mail:parsed", mail, raw
-            msg.on "end", =>
-              # util.log "message id: #{msg.uid}"
-              # util.log "fetched message: " + util.inspect(msg, false, 5)
-              @emit "mail:parsed", raw
-              # parser.end()
+          # fetch.on "message", (msg) =>
+          #   raw = ""
+          #   msg.on "data", (data) ->
+          #     raw += data.toString()
+          #   msg.on "end", =>
+          #     # util.log "message id: #{msg.uid}"
+          #     # util.log "fetched message: " + util.inspect(msg, false, 5)
+          #     @emit "mail:parsed", raw
         catch error
           util.log "Error fetching Emails from Account: #{error}"
                     
