@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "coffee-script": ">=1.3.3",
-    "imap": "https://github.com/mscdex/node-imap/tarball/master",
+    "imap": "https://github.com/nerdyglasses/node-imap/tarball/master",
     "moment-strftime": "~>0.1.2"
   },
   "devDependencies": {},
