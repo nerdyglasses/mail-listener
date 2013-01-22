@@ -61,9 +61,8 @@ class MailListener extends EventEmitter
           util.log "found #{searchResults.length} emails"
           # 5. fetch emails
           fetch = @imap.fetch searchResults,
-            headers: false
+            headers: parse: false
             body: true
-            markSeen: true
             cb: (fetch) ->
               # 6. email was fetched. Parse it!   
               fetch.on "message", (msg) =>
