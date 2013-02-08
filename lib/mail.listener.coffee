@@ -52,7 +52,9 @@ class MailListener extends EventEmitter
     date = @settings.startDate
     date.setDate(date.getDate() - 1)
     console.log "Searchching #{@account.email} since: #{date}"
+    console.log "canflags: ", @imap.permFlags
     @imap.search [ 'ALL', ['SINCE', date] ], (err, searchResults) =>
+      console.log "searchResults: ", searchResults
       if err
         util.log "error searching emails #{err}"
         @emit "error", err
@@ -61,6 +63,7 @@ class MailListener extends EventEmitter
           util.log "found #{searchResults.length} emails"
           # 5. fetch emails
           self = @
+
           if searchResults.length > 0
             fetch = @imap.fetch searchResults,
               headers: parse: false
@@ -68,6 +71,7 @@ class MailListener extends EventEmitter
               cb: (fetch) ->
                 # 6. email was fetched. Parse it!   
                 fetch.on "message", (msg) =>
+                  
                   raw = ""
                   # parser = new MailParser
                   msg.on "data", (data) ->
@@ -77,8 +81,16 @@ class MailListener extends EventEmitter
                   #   # util.log "parsed mail" + util.inspect mail, false, 5
                   #   @emit "mail:parsed", mail, raw
                   msg.on "end", =>
+                    console.log "message flags: ", msg.flags
+                    
                     # util.log "message id: #{msg.uid}"
                     # util.log "fetched message: " + util.inspect(msg, false, 5)
+                    console.log "msg seqno", msg.seqno
+                    console.log "msg uid", msg.uid
+                    # self.imap.addFlags msg.uid , '\\Unseen'
+                    # self.imap.addFlags msg.uid , '\\Seen'
+                    # self.imap.delFlags msg.uid , 'read'
+                    
                     self.emit "mail:parsed", raw
                     # parser.end()
         catch error
