@@ -49,9 +49,9 @@ class MailListener extends EventEmitter
               # 4. Search Emails
               @search()
   search: =>
-    console.log "Searchching #{@account.email} since: #{@settings.startDate}"
     date = @settings.startDate
     date.setDate(date.getDate() - 1)
+    console.log "Searchching #{@account.email} since: #{date}"
     @imap.search [ 'ALL', ['SINCE', date] ], (err, searchResults) =>
       if err
         util.log "error searching emails #{err}"
@@ -61,25 +61,26 @@ class MailListener extends EventEmitter
           util.log "found #{searchResults.length} emails"
           # 5. fetch emails
           self = @
-          fetch = @imap.fetch searchResults,
-            headers: parse: false
-            body: true
-            cb: (fetch) ->
-              # 6. email was fetched. Parse it!   
-              fetch.on "message", (msg) =>
-                raw = ""
-                # parser = new MailParser
-                msg.on "data", (data) ->
-                  raw += data.toString()
-                  # parser.write data.toString()
-                # parser.on "end", (mail) =>
-                #   # util.log "parsed mail" + util.inspect mail, false, 5
-                #   @emit "mail:parsed", mail, raw
-                msg.on "end", =>
-                  # util.log "message id: #{msg.uid}"
-                  # util.log "fetched message: " + util.inspect(msg, false, 5)
-                  self.emit "mail:parsed", raw
-                  # parser.end()
+          if searchResults.length > 0
+            fetch = @imap.fetch searchResults,
+              headers: parse: false
+              body: true
+              cb: (fetch) ->
+                # 6. email was fetched. Parse it!   
+                fetch.on "message", (msg) =>
+                  raw = ""
+                  # parser = new MailParser
+                  msg.on "data", (data) ->
+                    raw += data.toString()
+                    # parser.write data.toString()
+                  # parser.on "end", (mail) =>
+                  #   # util.log "parsed mail" + util.inspect mail, false, 5
+                  #   @emit "mail:parsed", mail, raw
+                  msg.on "end", =>
+                    # util.log "message id: #{msg.uid}"
+                    # util.log "fetched message: " + util.inspect(msg, false, 5)
+                    self.emit "mail:parsed", raw
+                    # parser.end()
         catch error
           util.log "Error fetching Emails from Account: #{error}"
                     
