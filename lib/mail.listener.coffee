@@ -60,6 +60,7 @@ class MailListener extends EventEmitter
         try
           util.log "found #{searchResults.length} emails"
           # 5. fetch emails
+          self = @
           fetch = @imap.fetch searchResults,
             headers: parse: false
             body: true
@@ -77,7 +78,7 @@ class MailListener extends EventEmitter
                 msg.on "end", =>
                   # util.log "message id: #{msg.uid}"
                   # util.log "fetched message: " + util.inspect(msg, false, 5)
-                  @emit "mail:parsed", raw
+                  self.emit "mail:parsed", raw
                   # parser.end()
         catch error
           util.log "Error fetching Emails from Account: #{error}"
