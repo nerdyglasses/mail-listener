@@ -71,28 +71,17 @@ class MailListener extends EventEmitter
               cb: (fetch) ->
                 # 6. email was fetched. Parse it!   
                 fetch.on "message", (msg) =>
-                  
                   raw = ""
-                  # parser = new MailParser
                   msg.on "data", (data) ->
                     raw += data.toString()
-                    # parser.write data.toString()
-                  # parser.on "end", (mail) =>
-                  #   # util.log "parsed mail" + util.inspect mail, false, 5
-                  #   @emit "mail:parsed", mail, raw
                   msg.on "end", =>
-                    # console.log "message flags: ", msg.flags
-                    
+                    # util.log "message flags: ", msg.flags
                     # util.log "message id: #{msg.uid}"
                     # util.log "fetched message: " + util.inspect(msg, false, 5)
-                    # console.log "msg seqno", msg.seqno
-                    # console.log "msg uid", msg.uid
-                    # self.imap.addFlags msg.uid , '\\Unseen'
-                    # self.imap.addFlags msg.uid , '\\Seen'
-                    # self.imap.delFlags msg.uid , 'read'
-                    
-                    self.emit "mail:parsed", raw, msg.uid
-                    # parser.end()
+                    # util.log "msg seqno", msg.seqno
+                    # util.log "msg uid", msg.uid
+                    # self.emit "mail:msgupdate", msg.uid, msg.flags
+                    self.emit "mail:parsed", raw, msg.uid, msg.flags
         catch error
           util.log "Error fetching Emails from Account: #{error}"
                     
