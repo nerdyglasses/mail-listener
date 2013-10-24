@@ -14,7 +14,7 @@ class MailListener extends EventEmitter
 
 
   # foo
-  start: => 
+  start: -> 
     # 1. connect to imap server  
     @imap.connect (err) =>
       if err
@@ -51,7 +51,7 @@ class MailListener extends EventEmitter
               # 4. Search Emails
               @searchHeaders()
 
-  searchHeaders: =>
+  searchHeaders: ->
     date = @settings.startDate
     date.setDate(date.getDate() - 1)
     # console.log date
@@ -97,7 +97,7 @@ class MailListener extends EventEmitter
 
 
   # stop listener
-  stop: =>
+  stop: ->
     @imap.logout =>
       @emit "server:disconnected"
 
