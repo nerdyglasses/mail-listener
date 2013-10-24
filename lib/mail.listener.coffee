@@ -19,7 +19,7 @@ class MailListener extends EventEmitter
         util.log "error connecting to mail server #{err}"
         @emit "error", err
       else
-        util.log "successfully connected to mail server"
+        # util.log "successfully connected to mail server"
         @emit "server:connected"
         # set some error event listeners
         @imap.on 'close', (err) =>
@@ -29,29 +29,30 @@ class MailListener extends EventEmitter
           # console.log 'error', util.inspect(err)
           @emit 'server:error', err
         # 2. open mailbox
-        util.log "open mailbox #{@settings.mailbox}"
+        # util.log "open mailbox #{@settings.mailbox}"
         @imap.openBox @settings.mailbox, false, (err) =>
           if err
             util.log "error opening mail box #{err}"
             @emit "error", err
           else
             @emit "mailbox:connected"
-            util.log "successfully opened mail box"
+            # util.log "successfully opened mail box"
             # 3a. listen for mail changes
             @imap.on 'msgupdate', (msg) =>
-              util.log "changed msg: ", util.inspect(msg)
+              # util.log "changed msg: ", util.inspect(msg)
               @emit 'mail:msgupdate', msg
             # 3b. listen for new emails in the inbox
-            @search()
-            @imap.on "mail", (id) =>
-              util.log "new mail arrived with id #{id}"
-              @emit "mail:arrived", id
+            @searchHeaders()
+            @imap.on "mail", (message_count) =>
+              # util.log "#{message_count} new mail/s arrived"
+              @emit "mail:arrived", message_count
               # 4. Search Emails
-              @search()
-  search: =>
+              @searchHeaders()
+  searchHeaders: =>
     date = @settings.startDate
     date.setDate(date.getDate() - 1)
-    console.log "Searchching #{@account.email} since: #{date}"
+    # console.log date
+    # console.log "Searching #{@account.email} since: #{date}"
     # console.log "canflags: ", @imap.permFlags
     @imap.search [ 'ALL', ['SINCE', date] ], (err, searchResults) =>
       # console.log "searchResults: ", searchResults
@@ -60,31 +61,38 @@ class MailListener extends EventEmitter
         @emit "error", err
       else
         try
-          util.log "found #{searchResults.length} emails"
           # 5. fetch emails
           self = @
-
           if searchResults.length > 0
-            fetch = @imap.fetch searchResults,
-              headers: parse: false
-              body: true
+            @imap.fetch searchResults,
+              headers: true
+              body: false
               cb: (fetch) ->
-                # 6. email was fetched. Parse it!   
+                # 6. email header was fetched.
                 fetch.on "message", (msg) =>
-                  raw = ""
-                  msg.on "data", (data) ->
-                    raw += data.toString()
-                  msg.on "end", =>
-                    # util.log "message flags: ", msg.flags
-                    # util.log "message id: #{msg.uid}"
-                    # util.log "fetched message: " + util.inspect(msg, false, 5)
-                    # util.log "msg seqno", msg.seqno
-                    # util.log "msg uid", msg.uid
-                    # self.emit "mail:msgupdate", msg.uid, msg.flags
-                    self.emit "mail:parsed", raw, msg.uid, msg.flags
+                  msg.on "end", => self.emit "mail:headers", msg.uid, msg.flags
         catch error
           util.log "Error fetching Emails from Account: #{error}"
-                    
+  
+  fetchEmail: (id, callback) ->
+    # console.log "fetching email with id: #{id}"
+    @imap.fetch id,
+      headers: parsed: false
+      body: true
+      cb: (fetch) ->
+        # 6. email was fetched. Parse it!
+        fetch.on "message", (msg) =>
+          raw = ""
+          msg.on "data", (data) ->
+            # util.log('got data')
+            raw += data.toString()
+          msg.on "end", =>
+            callback
+              raw: raw
+              msg: msg
+
+
+
   # stop listener
   stop: =>
     @imap.logout =>
