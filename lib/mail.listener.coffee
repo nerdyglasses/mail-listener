@@ -11,7 +11,9 @@ class MailListener extends EventEmitter
     throw new Error('MailListener: settings.startDate not specified.') unless typeof @settings.startDate == 'object'
     
     @imap = new ImapConnection @account
-  # start listener
+
+
+  # foo
   start: => 
     # 1. connect to imap server  
     @imap.connect (err) =>
@@ -48,6 +50,7 @@ class MailListener extends EventEmitter
               @emit "mail:arrived", message_count
               # 4. Search Emails
               @searchHeaders()
+
   searchHeaders: =>
     date = @settings.startDate
     date.setDate(date.getDate() - 1)
