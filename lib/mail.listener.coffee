@@ -12,8 +12,6 @@ class MailListener extends EventEmitter
     
     @imap = new ImapConnection @account
 
-
-  # foo
   start: -> 
     # 1. connect to imap server  
     @imap.connect (err) =>
