@@ -78,7 +78,7 @@ class MailListener extends EventEmitter
   fetchEmail: (id, callback) ->
     # console.log "fetching email with id: #{id}"
     @imap.fetch id,
-      headers: parsed: false
+      headers: parse: false
       body: true
       cb: (fetch) ->
         # 6. email was fetched. Parse it!
