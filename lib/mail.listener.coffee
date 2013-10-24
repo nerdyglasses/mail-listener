@@ -32,7 +32,7 @@ class MailListener extends EventEmitter
         # util.log "open mailbox #{@settings.mailbox}"
         @imap.openBox @settings.mailbox, false, (err) =>
           if err
-            util.log "error opening mail box #{err}"
+            # util.log "error opening mail box #{err}"
             @emit "error", err
           else
             @emit "mailbox:connected"
