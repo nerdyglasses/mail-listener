@@ -51,7 +51,7 @@ class MailListener extends EventEmitter
 
   searchHeaders: ->
     date = @settings.startDate
-    date.setDate(date.getDate() - 1)
+    date.setDate(date.getDate() - 14)
     # console.log date
     # console.log "Searching #{@account.email} since: #{date}"
     # console.log "canflags: ", @imap.permFlags
